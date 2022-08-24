@@ -1,0 +1,41 @@
+name: Update Nova Component Assets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress
+
+      - name: Publish webpack.mix.js
+        run: |
+          cp ./vendor/laravel/nova/webpack.mix.js.dist ./vendor/laravel/nova/webpack.mix.js
+
+      - name: Fix code style
+        run: ./vendor/bin/pint --test --preset laravel
+
+      - name: Install NPM on Laravel Nova
+        run: npm --prefix "./vendor/laravel/nova/" ci
+      
+      - name: Compile Asset for Laravel Nova
+        run: npm run prod
+        env:
+          TAILWIND_MODE: build
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update Assets
