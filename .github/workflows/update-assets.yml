@@ -28,9 +28,6 @@ jobs:
         run: |
           cp ./vendor/laravel/nova/webpack.mix.js.dist ./vendor/laravel/nova/webpack.mix.js
 
-      - name: Fix code style
-        run: ./vendor/bin/pint --test --preset laravel
-
       - name: Install NPM on Laravel Nova
         run: npm --prefix "./vendor/laravel/nova/" ci
       
